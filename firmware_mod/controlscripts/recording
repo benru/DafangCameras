@@ -37,7 +37,7 @@ start()
 	do
 	  sleep 1
 	done
-	/system/sdcard/bin/busybox nohup /system/sdcard/bin/avconv -flags low_delay -fflags nobuffer -probesize 32 -i rtsp://"$CREDENTIALS"0.0.0.0:$PORT/unicast -strict experimental -y -vcodec copy -an $RECORDING_PATH &>/dev/null &
+	/system/sdcard/bin/busybox nohup /system/sdcard/bin/avconv -flags low_delay -fflags nobuffer -probesize 32 -rtsp_transport tcp -i rtsp://"$CREDENTIALS"127.0.0.1:$PORT/unicast -strict experimental -y -vcodec copy -an $RECORDING_PATH &>/dev/null &
 	echo "$!" > "$PIDFILE"
   fi
 }
