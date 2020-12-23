@@ -37,7 +37,9 @@ start()
 	do
 	  sleep 1
 	done
-	/system/sdcard/bin/busybox nohup /system/sdcard/bin/avconv -flags low_delay -fflags nobuffer -probesize 32 -rtsp_transport tcp -i rtsp://"$CREDENTIALS"127.0.0.1:$PORT/unicast -strict experimental -y -vcodec copy -an $RECORDING_PATH &>/dev/null &
+	/system/sdcard/bin/busybox nohup sh <<CMD &>/dev/null &
+/system/sdcard/bin/avconv -flags low_delay -fflags nobuffer -probesize 32 -rtsp_transport tcp -i rtsp://"$CREDENTIALS"127.0.0.1:$PORT/unicast -strict experimental -y -vcodec copy -an -f h264 - | streamsplit -s 4g -t 1h $DCIM_PATH/%Y-%m-%d/%H/REC_%H-%M-%S.h264
+CMD
 	echo "$!" > "$PIDFILE"
   fi
 }
@@ -46,7 +48,7 @@ stop()
 {
   pid="$(cat "$PIDFILE" 2>/dev/null)"
   if [ "$pid" ]; then
-	kill "$pid"
+	pkill -P "$pid" avconv
 	rm "$PIDFILE" 1> /dev/null 2>&1
 	echo "Stopped recording."
   else
